@@ -27,8 +27,9 @@ async def on_ready():
     print(f"XP_PER_MESSAGE: {XP_PER_MESSAGE}")
     global xp_data
     xp_data = load_xp_data()
-    print('XP data loaded:', xp_data)
-
+    #print('XP data loaded:', xp_data)
+    print('XP data loaded')
+    
 """
 try:
     with open('xp_data.json', 'r') as f:
@@ -61,6 +62,7 @@ async def on_message(message):
             xp_data.setdefault(author_id, 0) # default if it doesn't already exist
             
             xp_data[author_id] += XP_PER_MESSAGE
+            print(f"{message.author} = {xp_data[author.id]}")
             #print(f"xp_data: {xp_data}")
             save_xp_data()
 
@@ -137,14 +139,25 @@ def calculate_level(xp):
 @bot.command()
 async def level(ctx):
     if ctx.author.id == 811235357663297546:
-        author_id = str(ctx.author.id)
+
+        for author_id, xp_value in xp_data.items():
+            try:
+                current_level = calculate_level(xp_value)
+                user = bot.get_user(author_id)
+                print(f"user: {user} | xp: {xp_value} | level: {current_level}") 
+                
+            except Exception as e:
+                print(f"Error for user {author_id}: {e}")
+        """
         if author_id in xp_data:
             xp = xp_data[author_id]
             level = calculate_level(xp)
             await ctx.send(f'You are at level {level} with {xp} XP.')
         else:
             await ctx.send('You have not earned any XP yet.')
-            # show top users by level / exp
+            # show top users by level / exp        
+        """
+
 
 
 @bot.command()
