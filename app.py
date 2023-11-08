@@ -62,7 +62,7 @@ async def on_message(message):
             xp_data.setdefault(author_id, 0) # default if it doesn't already exist
             
             xp_data[author_id] += XP_PER_MESSAGE
-            print(f"{message.author} = {xp_data[author.id]}")
+            print(f"{message.author} = {xp_data[author_id]}")
             #print(f"xp_data: {xp_data}")
             save_xp_data()
 
