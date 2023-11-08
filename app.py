@@ -140,9 +140,10 @@ def calculate_level(xp):
 async def level(ctx):
     if ctx.author.id == 811235357663297546:
 
-        for author_id, xp_value in xp_data.items():
+        for author_id_str, xp_value in xp_data.items():
             try:
                 current_level = calculate_level(xp_value)
+                author_id = int(author_id_str)
                 user = bot.get_user(author_id)
                 print(f"user: {user} | xp: {xp_value} | level: {current_level}") 
                 
