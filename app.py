@@ -140,15 +140,26 @@ def calculate_level(xp):
 async def level(ctx):
     if ctx.author.id == 811235357663297546:
 
-        for author_id_str, xp_value in xp_data.items():
-            try:
-                current_level = calculate_level(xp_value)
-                author_id = int(author_id_str)
-                user = bot.get_user(author_id)
-                print(f"user: {user} | xp: {xp_value} | level: {current_level}") 
+        try:
+            user_data = []
+
+            for author_id_str, xp_value in xp_data.items():
+                try:
+                    current_level = calculate_level(xp_value)
+                    author_id = int(author_id_str)
+                    user = bot.get_user(author_id)
+                    user_data.append((user, xp_value, current_level))
                 
-            except Exception as e:
-                print(f"Error for user {author_id}: {e}")
+                except Exception as e:
+                    print(f"Error for user {author_id}: {e}")
+
+            sorted_user_data = sorted(user_data, key=lambda x: x[2], reverse=True)
+
+            for user, xp, level in sorted_user_data:
+                print(f"user: {user} | xp: {xp} | level: {level}")
+
+        except Exception as e:
+            print(f"Error: {e}")
         """
         if author_id in xp_data:
             xp = xp_data[author_id]
