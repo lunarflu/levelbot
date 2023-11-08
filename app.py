@@ -153,7 +153,7 @@ async def level(ctx):
                 except Exception as e:
                     print(f"Error for user {author_id}: {e}")
 
-            sorted_user_data = sorted(user_data, key=lambda x: x[2], reverse=True)
+            sorted_user_data = sorted(user_data, key=lambda x: x[1], reverse=True)
 
             for user, xp, level in sorted_user_data:
                 print(f"user: {user} | xp: {xp} | level: {level}")
