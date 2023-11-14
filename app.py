@@ -4,6 +4,7 @@ import threading
 from discord.ext import commands
 import json
 import datetime
+import requests
 
 import gradio_client
 import gradio as gr
@@ -19,6 +20,15 @@ XP_PER_MESSAGE = 10 # 100k messages = 1M exp = lvl 100
 data_file_path = '/data/xp_data.json'
 xp_data = {}
 """"""
+
+API_URL = "https://api-inference.huggingface.co/models/mariagrandury/roberta-base-finetuned-sms-spam-detection"
+HF_TOKEN = os.environ.get("HF_TOKEN", None)
+headers = {"Authorization": f"Bearer {HF_TOKEN}"}
+
+
+def query(payload):
+	response = requests.post(API_URL, headers=headers, json=payload)
+	return response.json()
 
 
 @bot.event
@@ -38,8 +48,6 @@ except FileNotFoundError:
     xp_data = {}
 
 """
-
-
     
 def save_xp_data():
     with open(data_file_path, 'w') as f:
@@ -57,7 +65,11 @@ def load_xp_data():
 async def on_message(message):
     try:
         if message.author != bot.user:
-            """AWAIT LEVEL ALGORITM OR SOMETHING (MULTIPLE FILES?)"""
+
+            #output = query({"inputs": f"{message.content}",})
+            #print(output)
+            
+            """AWAIT LEVEL ALGORITHM OR SOMETHING (MULTIPLE FILES?)"""
             author_id = str(message.author.id) # dictionary pairs (ID -> TOTAL XP)
             xp_data.setdefault(author_id, 0) # default if it doesn't already exist
             
