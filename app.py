@@ -129,7 +129,14 @@ async def on_message(message):
                         if lvl1 not in message.author.roles:
                             await message.author.add_roles(lvl1)
                             print(f"Gave {message.author} {lvl1}")
-                    
+                    # level up
+                    elif current_level >= 2 and current_level <=15:
+                        current_role = lvls[current_level]
+                        if current_role not in message.author.roles:
+                            await message.author.add_roles(current_role)
+                            print(f"Gave {message.author} {current_role}")
+                            await message.author.remove_roles(lvls[current_level -1])
+                            print(f"Removed {lvls[current_level -1]} from {message.author}")
 
             
             except Exception as e:
