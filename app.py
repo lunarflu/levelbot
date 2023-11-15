@@ -214,6 +214,30 @@ def calculate_level(xp):
 
 
 @bot.command()
+async def fixsheets(ctx):
+    if ctx.author.id == 811235357663297546:
+        try:
+            # iterate through @verified role members
+
+            # test in test sheet first
+
+            role_id = int(900063512829755413) # 900063512829755413 = @verified
+            role = discord.utils.get(ctx.guild.roles, id=role_id)
+            
+            if role is None:
+                print(f"Role with ID '{role_id}' not found.")
+                return
+        
+            members_with_role = [member.id for member in ctx.guild.members if role in member.roles]
+        
+            print(f"Members with the role with ID '{role_id}': {', '.join(map(str, members_with_role))}")
+
+
+        except Exception as e:
+            print(f"Error: {e}")
+            
+
+@bot.command()
 async def level(ctx):
     if ctx.author.id == 811235357663297546:
 
