@@ -85,13 +85,14 @@ async def on_message(message):
                     cell = worksheet.find(str(message.author.id))
                     length = len(worksheet.col_values(1))
                     if cell is None:
-                        print(f"creating new record for {member}")            
+                        print(f"creating new record for {message.author}")            
                         # if not, create new record
+                        string_member_id = str(message.author.id)
                         xp = 10
-                        worksheet.update(values=[[string_member_id, member.name, xp, level]], range_name=f'A{length+1}:D{length+1}')
+                        worksheet.update(values=[[string_member_id, message.author.name, xp, level]], range_name=f'A{length+1}:D{length+1}')
                     else:
                         if cell:
-                            print(f"updating record for {member}")
+                            print(f"updating record for {message.author}")
                             # if so, update that row...
                             # update exp, can only be in a positive direction
                             # read
