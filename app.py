@@ -39,6 +39,7 @@ async def on_ready():
     xp_data = load_xp_data()
     #print('XP data loaded:', xp_data)
     print('XP data loaded')
+    print(xp_data)
     
 """
 try:
@@ -102,51 +103,52 @@ async def on_message(message):
                     lvl13 = guild.get_role(1171525021928263791)
                     lvl14 = guild.get_role(1171525062201966724)
                     lvl15 = guild.get_role(1171525098465918996)
-    
+
+                    """
                     if current_level == 2:
-                        if lvl11 not in message.author.roles:
+                        if lvl2 not in message.author.roles:
                             await message.author.add_roles(lvl2)  
                             print(f"Gave {message.author} {lvl2}")
                             await message.author.remove_roles(lvl1)
                             print(f"Removed {lvl1} from {message.author}")
     
                     if current_level == 3:
-                        if lvl11 not in message.author.roles:
+                        if lvl3 not in message.author.roles:
                             await message.author.add_roles(lvl3)  
                             print(f"Gave {message.author} {lvl3}")
                             await message.author.remove_roles(lvl2)
                             print(f"Removed {lvl2} from {message.author}")
     
                     if current_level == 4:
-                        if lvl11 not in message.author.roles:
+                        if lvl4 not in message.author.roles:
                             await message.author.add_roles(lvl4)  
                             print(f"Gave {message.author} {lvl4}")
                             await message.author.remove_roles(lvl3)
                             print(f"Removed {lvl3} from {message.author}")
     
                     if current_level == 5:
-                        if lvl11 not in message.author.roles:
+                        if lvl5 not in message.author.roles:
                             await message.author.add_roles(lvl5)  
                             print(f"Gave {message.author} {lvl5}")
                             await message.author.remove_roles(lvl4)
                             print(f"Removed {lvl4} from {message.author}")
     
                     if current_level == 6:
-                        if lvl11 not in message.author.roles:
+                        if lvl6 not in message.author.roles:
                             await message.author.add_roles(lvl6)  
                             print(f"Gave {message.author} {lvl6}")
                             await message.author.remove_roles(lvl5)
                             print(f"Removed {lvl5} from {message.author}")
                             
                     if current_level == 7:
-                        if lvl11 not in message.author.roles:
+                        if lvl7 not in message.author.roles:
                             await message.author.add_roles(lvl7)  
                             print(f"Gave {message.author} {lvl7}")
                             await message.author.remove_roles(lvl6)
                             print(f"Removed {lvl6} from {message.author}")
     
                     if current_level == 8:
-                        if lvl11 not in message.author.roles:
+                        if lvl8 not in message.author.roles:
                             await message.author.add_roles(lvl8)  
                             print(f"Gave {message.author} {lvl8}")
                             await message.author.remove_roles(lvl7)
@@ -199,7 +201,9 @@ async def on_message(message):
                             await message.author.add_roles(lvl15) 
                             print(f"Gave {message.author} {lvl15}")
                             await message.author.remove_roles(lvl14)
-                            print(f"Removed {lvl14} from {message.author}")
+                            print(f"Removed {lvl14} from {message.author}")                    
+                    """
+
             
             except Exception as e:
                 print(f"Error: {e}")
@@ -212,6 +216,46 @@ async def on_message(message):
 def calculate_level(xp):
     return int(xp ** (1.0 / 3.0))
 
+
+def calculate_xp(level):
+    return (int(level ** 3))
+
+
+@bot.command()
+async def restore_exp(ctx):  
+    if ctx.author.id == 811235357663297546:
+        try:
+            guild = ctx.guild
+            lvl1 = guild.get_role(1171861537699397733)
+            lvl2 = guild.get_role(1171861595115245699)
+            lvl3 = guild.get_role(1171861626715115591)
+            lvl4 = guild.get_role(1171861657975259206)
+            lvl5 = guild.get_role(1171861686580412497)
+            lvl6 = guild.get_role(1171861900301172736)
+            lvl7 = guild.get_role(1171861936258941018)
+            lvl8 = guild.get_role(1171861968597024868)
+            lvl9 = guild.get_role(1171862009982242836)
+            lvl10 = guild.get_role(1164188093713223721)
+            lvl11 = guild.get_role(1171524944354607104)
+            lvl12 = guild.get_role(1171524990257082458)
+            lvl13 = guild.get_role(1171525021928263791)
+            lvl14 = guild.get_role(1171525062201966724)
+            lvl15 = guild.get_role(1171525098465918996)
+
+            # find all members with lvl13 role
+            members_with_role = [member.id for member in ctx.guild.members if lvl13 in member.roles]
+            # extract user_id + xp based on level
+            for member2 in members_with_role:
+                print(member2)
+                xp = calculate_xp(13)
+                level = calculate_level(xp+1)
+                print(xp)
+                print(level)
+                
+            
+        except Exception as e:
+            print(f"Error: {e}")
+            
 
 @bot.command()
 async def fixsheets(ctx):
