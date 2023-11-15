@@ -103,7 +103,6 @@ async def on_message(message):
                             print(current_level)
                             # write with added xp
                             worksheet.update(values=[[xp, current_level]], range_name=f'C{cell.row}:D{cell.row}')   
-                            print("debug")
                             if current_level == 2:
                                 if lvl2 not in message.author.roles:
                                     await message.author.add_roles(lvl2)  
