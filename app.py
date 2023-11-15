@@ -19,8 +19,6 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 """"""
 XP_PER_MESSAGE = 10 # 100k messages = 1M exp = lvl 100
-#data_file_path = '/data/xp_data.json'
-#xp_data = {}
 """"""
 service_account = json.loads(os.environ.get('KEY'))
 file_path = 'service_account.json'
@@ -32,9 +30,12 @@ worksheet = gspread_bot.open("levelbot").sheet1
 API_URL = "https://api-inference.huggingface.co/models/mariagrandury/roberta-base-finetuned-sms-spam-detection"
 HF_TOKEN = os.environ.get("HF_TOKEN", None)
 headers = {"Authorization": f"Bearer {HF_TOKEN}"}
+"""
 def query(payload):
 	response = requests.post(API_URL, headers=headers, json=payload)
 	return response.json()
+"""
+
 """"""
 
 @bot.event
@@ -97,11 +98,12 @@ async def on_message(message):
                             # update exp, can only be in a positive direction
                             # read
                             xp = worksheet.cell(cell.row, cell.col+2).value
-                            xp += XP_PER_MESSAGE
+                            xp = int(xp) + XP_PER_MESSAGE
                             current_level = calculate_level(xp)
+                            print(current_level)
                             # write with added xp
                             worksheet.update(values=[[xp, current_level]], range_name=f'C{cell.row}:D{cell.row}')   
-
+                            print("debug")
                             if current_level == 2:
                                 if lvl2 not in message.author.roles:
                                     await message.author.add_roles(lvl2)  
@@ -213,30 +215,6 @@ async def on_message(message):
             
     except Exception as e:
         print(f"Error: {e}")
-
-
-@bot.command()
-async def fixsheets(ctx):
-    if ctx.author.id == 811235357663297546:
-        try:
-            # iterate through @verified role members
-
-            # test in test sheet first
-
-            role_id = int(900063512829755413) # 900063512829755413 = @verified
-            role = discord.utils.get(ctx.guild.roles, id=role_id)
-            
-            if role is None:
-                print(f"Role with ID '{role_id}' not found.")
-                return
-        
-            members_with_role = [member.id for member in ctx.guild.members if role in member.roles]
-        
-            print(f"Members with the role with ID '{role_id}': {', '.join(map(str, members_with_role))}")
-
-
-        except Exception as e:
-            print(f"Error: {e}")
             
 
 @bot.command()
