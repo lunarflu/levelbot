@@ -205,8 +205,6 @@ async def on_message(message):
                             row_number = cell.row
                             column_number = cell.col                
                             """                    
-
-            
             except Exception as e:
                 print(f"Error: {e}")
 
@@ -215,107 +213,6 @@ async def on_message(message):
     except Exception as e:
         print(f"Error: {e}")
 
-        
-
-
-
-@bot.command()
-async def restore_exp(ctx):  
-    if ctx.author.id == 811235357663297546:
-        try:
-            guild = ctx.guild
-            lvl1 = guild.get_role(1171861537699397733)
-            lvl2 = guild.get_role(1171861595115245699)
-            lvl3 = guild.get_role(1171861626715115591)
-            lvl4 = guild.get_role(1171861657975259206)
-            lvl5 = guild.get_role(1171861686580412497)
-            lvl6 = guild.get_role(1171861900301172736)
-            lvl7 = guild.get_role(1171861936258941018)
-            lvl8 = guild.get_role(1171861968597024868)
-            lvl9 = guild.get_role(1171862009982242836)
-            lvl10 = guild.get_role(1164188093713223721)
-            lvl11 = guild.get_role(1171524944354607104)
-            lvl12 = guild.get_role(1171524990257082458)
-            lvl13 = guild.get_role(1171525021928263791)
-            lvl14 = guild.get_role(1171525062201966724)
-            lvl15 = guild.get_role(1171525098465918996)
-
-
-            level_roles = [lvl1,lvl2,lvl3,lvl4,lvl5,lvl6,lvl7,lvl8,lvl9,lvl10,lvl11,lvl12,lvl13,lvl14,lvl15]
-            
-            member_id_column_values = worksheet.col_values(1)
-
-            for role in level_roles:
-                role_members = [member.id for member in ctx.guild.members if role in member.roles]
-            
-                # role = position in level_roles + some adjustment factor
-                # list of people in a given role (e.g. lvl5)
-                print(f"role: {role} | role_members: {role_members}")
-                
-                #members_with_role = [member.id for member in ctx.guild.members if lvl13 in member.roles]
-                # extract user_id + xp based on level
-                for member_id in role_members:
-                    string_member_id = str(member_id)
-                    if string_member_id in member_id_column_values:
-                        continue
-                    
-                    member = await bot.fetch_user(member_id)
-                    #xp = calculate_xp(13)
-                    position = level_roles.index(role) + 1
-                    xp = calculate_xp(position)
-                    level = calculate_level(xp+1)
-                    print(f"{role} {level} {xp} {member}")
-                    
-                    string_xp = str(xp)
-                    string_level = str(level)
-                    
-                    # get column name / data to safetycheck
-    
-                    
-                    # does a record already exist?
-                    cell = worksheet.find(string_member_id)
-
-                    
-                    
-                    #if cell is None:
-                    print(f"creating new record for {member}")
-                    # if not, create new record
-                    length = len(worksheet.col_values(1))
-                    worksheet.update(values=[[string_member_id, member.name, xp, level]], range_name=f'A{length+1}:D{length+1}')
-                    """
-                    cell = worksheet.cell(length+1,1)
-                    worksheet.update_cell(length+1, 1, string_member_id)
-                    worksheet.update_cell(length+1, 2, member.name)
-                    worksheet.update_cell(length+1, 3, string_xp)
-                    worksheet.update_cell(length+1, 4, string_level)
-                    """
-
-                    
-                    else:
-                        if cell:
-                            continue
-                            
-                            print(f"updating record for {member}")
-                            # if so, update that row...
-                            # update exp, can only be in a positive direction
-                            worksheet.update(values=[[xp, level]], range_name=f'C{cell.row}:D{cell.row}')
-
-                            #worksheet.update_cell(cell.row, cell.col+2, xp)
-                            #worksheet.update_cell(cell.row, cell.col+3, level)
-                    
-
-    
-                    """
-                    value = cell.value
-                    row_number = cell.row
-                    column_number = cell.col                
-                    """
-                      
-
-
-        except Exception as e:
-            print(f"Error: {e}")
-            
 
 @bot.command()
 async def fixsheets(ctx):
