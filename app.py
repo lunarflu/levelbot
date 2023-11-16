@@ -90,17 +90,18 @@ async def on_message(message):
                         # if not, create new record
                         string_member_id = str(message.author.id)
                         xp = 10
-                        worksheet.update(values=[[string_member_id, message.author.name, xp, level]], range_name=f'A{length+1}:D{length+1}')
+                        new_level = calculate_level(xp)
+                        message_author_name = message.author.name
+                        worksheet.update(values=[[string_member_id, message_author_name, xp, new_level]], range_name=f'A{length+1}:D{length+1}')
                     else:
                         if cell:
-                            print(f"updating record for {message.author}")
                             # if so, update that row...
                             # update exp, can only be in a positive direction
                             # read
                             xp = worksheet.cell(cell.row, cell.col+2).value
                             xp = int(xp) + XP_PER_MESSAGE
                             current_level = calculate_level(xp)
-                            print(current_level)
+                            print(f"updating record for {message.author}: {xp} xp")
                             # write with added xp
                             worksheet.update(values=[[xp, current_level]], range_name=f'C{cell.row}:D{cell.row}')   
                             if current_level == 2:
