@@ -27,21 +27,17 @@ with open(file_path, 'w') as json_file:
 gspread_bot = gspread.service_account(filename='service_account.json')
 worksheet = gspread_bot.open("levelbot").sheet1
 """"""
-API_URL = "https://api-inference.huggingface.co/models/mariagrandury/roberta-base-finetuned-sms-spam-detection"
-HF_TOKEN = os.environ.get("HF_TOKEN", None)
-headers = {"Authorization": f"Bearer {HF_TOKEN}"}
-"""
-def query(payload):
-	response = requests.post(API_URL, headers=headers, json=payload)
-	return response.json()
-"""
-
+bot_ids = [1136614989411655780, 1166392942387265536, 1158038249835610123, 1130774761031610388, 1155489509518098565, 1155169841276260546, 1152238037355474964, 1154395078735953930]
 """"""
 
 @bot.event
 async def on_ready():
     print(f'Logged in as {bot.user.name}')
     print(f"XP_PER_MESSAGE: {XP_PER_MESSAGE}")
+
+
+
+    
 
 
 def calculate_level(xp):
@@ -52,336 +48,83 @@ def calculate_xp(level):
     return (int(level ** 3))
 
 
+async def add_exp(member):
+    try:
+        guild = bot.get_guild(879548962464493619)
+        lvl1 = guild.get_role(1171861537699397733)
+        lvl2 = guild.get_role(1171861595115245699)
+        lvl3 = guild.get_role(1171861626715115591)
+        lvl4 = guild.get_role(1171861657975259206)
+        lvl5 = guild.get_role(1171861686580412497)
+        lvl6 = guild.get_role(1171861900301172736)
+        lvl7 = guild.get_role(1171861936258941018)
+        lvl8 = guild.get_role(1171861968597024868)
+        lvl9 = guild.get_role(1171862009982242836)
+        lvl10 = guild.get_role(1164188093713223721)
+        lvl11 = guild.get_role(1171524944354607104)
+        lvl12 = guild.get_role(1171524990257082458)
+        lvl13 = guild.get_role(1171525021928263791)
+        lvl14 = guild.get_role(1171525062201966724)
+        lvl15 = guild.get_role(1171525098465918996)
+        lvls = {
+            1: lvl1, 2: lvl2, 3: lvl3, 4: lvl4, 5: lvl5, 6: lvl6, 7: lvl7, 8: lvl8, 9: lvl9, 10: lvl10,
+            11: lvl11, 12: lvl12, 13: lvl13, 14: lvl14, 15: lvl15,
+        }        
+        #if member.id == 811235357663297546:
+        # does a record already exist?
+        cell = worksheet.find(str(member.id))
+        length = len(worksheet.col_values(1))
+        if cell is None:
+            print(f"creating new record for {member}")            
+            # if not, create new record
+            string_member_id = str(member.id)
+            xp = 10
+            current_level = calculate_level(xp)
+            member_name = member.name
+            worksheet.update(values=[[string_member_id, member_name, xp, current_level]], range_name=f'A{length+1}:D{length+1}')
+            # initial role assignment
+            if current_level == 1:
+                if lvl1 not in member.roles:
+                    await member.add_roles(lvl1)
+                    print(f"Gave {member} {lvl1}")
+        else:
+            if cell:
+                # if so, update that row...
+                xp = worksheet.cell(cell.row, cell.col+2).value
+                xp = int(xp) + XP_PER_MESSAGE
+                current_level = calculate_level(xp)
+                print(f"updating record for {member}: {xp} xp")
+                # write with added xp
+                worksheet.update(values=[[xp, current_level]], range_name=f'C{cell.row}:D{cell.row}')   
+                # level up
+                if current_level >= 2 and current_level <=15:
+                    current_role = lvls[current_level]
+                    if current_role not in member.roles:
+                        await member.add_roles(current_role)
+                        print(f"Gave {member} {current_role}")
+                        await member.remove_roles(lvls[current_level-1])
+                        print(f"Removed {lvls[current_level-1]} from {member}")      
+    except Exception as e:
+        print(f"add_exp Error: {e}")   
+
+
 @bot.event
 async def on_message(message):
     try:
-        if message.author != bot.user:
-
-            #output = query({"inputs": f"{message.content}",})
-            #print(output)
-            bot_ids = [1166392942387265536, 1158038249835610123, 1130774761031610388, 1155489509518098565, 1155169841276260546, 1152238037355474964, 1154395078735953930]
-
-            try:
-                if message.author.id not in bot_ids:
-                    #if message.author.id == 811235357663297546:
-                    # get level
-                    guild = bot.get_guild(879548962464493619)
-                    lvl1 = guild.get_role(1171861537699397733)
-                    lvl2 = guild.get_role(1171861595115245699)
-                    lvl3 = guild.get_role(1171861626715115591)
-                    lvl4 = guild.get_role(1171861657975259206)
-                    lvl5 = guild.get_role(1171861686580412497)
-                    lvl6 = guild.get_role(1171861900301172736)
-                    lvl7 = guild.get_role(1171861936258941018)
-                    lvl8 = guild.get_role(1171861968597024868)
-                    lvl9 = guild.get_role(1171862009982242836)
-                    lvl10 = guild.get_role(1164188093713223721)
-                    lvl11 = guild.get_role(1171524944354607104)
-                    lvl12 = guild.get_role(1171524990257082458)
-                    lvl13 = guild.get_role(1171525021928263791)
-                    lvl14 = guild.get_role(1171525062201966724)
-                    lvl15 = guild.get_role(1171525098465918996)
-
-                    lvls = {
-                        1: lvl1,
-                        2: lvl2,
-                        3: lvl3,
-                        4: lvl4,
-                        5: lvl5,
-                        6: lvl6,
-                        7: lvl7,
-                        8: lvl8,
-                        9: lvl9,
-                        10: lvl10,
-                        11: lvl11,
-                        12: lvl12,
-                        13: lvl13,
-                        14: lvl14,
-                        15: lvl15,
-                    }
-        
-                    # does a record already exist?
-                    cell = worksheet.find(str(message.author.id))
-                    length = len(worksheet.col_values(1))
-                    if cell is None:
-                        print(f"creating new record for {message.author}")            
-                        # if not, create new record
-                        string_member_id = str(message.author.id)
-                        xp = 10
-                        new_level = calculate_level(xp)
-                        message_author_name = message.author.name
-                        worksheet.update(values=[[string_member_id, message_author_name, xp, new_level]], range_name=f'A{length+1}:D{length+1}')
-                    else:
-                        if cell:
-                            # if so, update that row...
-                            # update exp, can only be in a positive direction
-                            # read
-                            xp = worksheet.cell(cell.row, cell.col+2).value
-                            xp = int(xp) + XP_PER_MESSAGE
-                            current_level = calculate_level(xp)
-                            print(f"updating record for {message.author}: {xp} xp")
-                            # write with added xp
-                            worksheet.update(values=[[xp, current_level]], range_name=f'C{cell.row}:D{cell.row}')   
-                            # initial role assignment
-                            if current_level == 1:
-                                if lvl1 not in message.author.roles:
-                                    await message.author.add_roles(lvl1)
-                                    print(f"Gave {message.author} {lvl1}")
-                            # level up
-                            elif current_level >= 2 and current_level <=15:
-                                current_role = lvls[current_level]
-                                if current_role not in message.author.roles:
-                                    await message.author.add_roles(current_role)
-                                    print(f"Gave {message.author} {current_role}")
-                                    await message.author.remove_roles(lvls[current_level -1])
-                                    print(f"Removed {lvls[current_level -1]} from {message.author}")                   
-
-        
-                            """
-                            value = cell.value
-                            row_number = cell.row
-                            column_number = cell.col                
-                            """                    
-            except Exception as e:
-                print(f"Error: {e}")
-
-            await bot.process_commands(message)
-            
+        if message.author.id not in bot_ids:
+            await add_exp(message.author)
+        await bot.process_commands(message)
     except Exception as e:
-        print(f"Error: {e}")
-            
+        print(f"on_message Error: {e}")
 
-@bot.command()
-async def level(ctx):
-    if ctx.author.id == 811235357663297546:
-
-        try:
-            user_data = []
-
-            for author_id_str, xp_value in xp_data.items():
-                try:
-                    current_level = calculate_level(xp_value)
-                    author_id = int(author_id_str)
-                    user = bot.get_user(author_id)
-                    user_data.append((user, xp_value, current_level))
-                
-                except Exception as e:
-                    print(f"Error for user {author_id}: {e}")
-
-            sorted_user_data = sorted(user_data, key=lambda x: x[1], reverse=True)
-
-            for user, xp, level in sorted_user_data:
-                print(f"user: {user} | xp: {xp} | level: {level}")
-
-        except Exception as e:
-            print(f"Error: {e}")
-        """
-        if author_id in xp_data:
-            xp = xp_data[author_id]
-            level = calculate_level(xp)
-            await ctx.send(f'You are at level {level} with {xp} XP.')
-        else:
-            await ctx.send('You have not earned any XP yet.')
-            # show top users by level / exp        
-        """
-
-
-
-@bot.command()
-async def count(ctx):
-    """Count total messages per user in all channels."""
-    if ctx.author.id == 811235357663297546:    
-        message_counts = {}
-    
-        for channel in ctx.guild.text_channels:
-            try:
-                async for message in channel.history(limit=None):
-                    message_counts[message.author] = message_counts.get(message.author, 0) + 1
-            except discord.Forbidden:
-                # Handle the Forbidden error
-                #await ctx.send(f"Missing access to read messages in {channel.name}")
-                print(f"Missing access to read messages in {channel.name}")
-    
-        sorted_users = sorted(message_counts.items(), key=lambda x: x[1], reverse=True)
-        top_list = "\n".join([f"{member.name}: {count}" for member, count in sorted_users[:50]])
-        #await ctx.send(f"Message count per user in all text channels:\n{top_list}")
-        print(f"Message count per user in all text channels:\n{top_list}")
-
-
-@bot.command()
-async def count_messages1(ctx):
-    if ctx.author.id == 811235357663297546: 
-        end_date = datetime.datetime.utcnow()  # Current date and time
-        start_date = end_date - datetime.timedelta(days=1)
-        message_count = 0
-        for channel in ctx.guild.text_channels:
-            try:
-                async for message in channel.history(limit=None, after=start_date, before=end_date):
-                    message_count += 1
-            except discord.Forbidden:
-                print(f"Missing access to read messages in {channel.name}")
-        print(f'Total messages between {start_date} and {end_date}: {message_count}')
-
-
-@bot.command()
-async def count_messages7(ctx):
-    if ctx.author.id == 811235357663297546: 
-        end_date = datetime.datetime.utcnow()  # Current date and time
-        start_date = end_date - datetime.timedelta(days=7)
-        message_count = 0
-        for channel in ctx.guild.text_channels:
-            try:
-                async for message in channel.history(limit=None, after=start_date, before=end_date):
-                    message_count += 1
-            except discord.Forbidden:
-                print(f"Missing access to read messages in {channel.name}")
-        print(f'Total messages between {start_date} and {end_date}: {message_count}')
-
-
-@bot.command()
-async def count_messages14(ctx):
-    if ctx.author.id == 811235357663297546: 
-        end_date = datetime.datetime.utcnow()  # Current date and time
-        start_date = end_date - datetime.timedelta(days=14)
-        message_count = 0
-        for channel in ctx.guild.text_channels:
-            try:
-                async for message in channel.history(limit=None, after=start_date, before=end_date):
-                    message_count += 1
-            except discord.Forbidden:
-                print(f"Missing access to read messages in {channel.name}")
-        print(f'Total messages between {start_date} and {end_date}: {message_count}')  
-
-
-@bot.command()
-async def count_messages30(ctx):
-    if ctx.author.id == 811235357663297546: 
-        end_date = datetime.datetime.utcnow()  # Current date and time
-        start_date = end_date - datetime.timedelta(days=30)
-        message_count = 0
-        for channel in ctx.guild.text_channels:
-            try:
-                async for message in channel.history(limit=None, after=start_date, before=end_date):
-                    message_count += 1
-            except discord.Forbidden:
-                print(f"Missing access to read messages in {channel.name}")
-        print(f'Total messages between {start_date} and {end_date}: {message_count}')
-
-
-@bot.command()
-async def count_messages60(ctx):
-    if ctx.author.id == 811235357663297546: 
-        end_date = datetime.datetime.utcnow()  # Current date and time
-        start_date = end_date - datetime.timedelta(days=60)
-        message_count = 0
-        for channel in ctx.guild.text_channels:
-            try:
-                async for message in channel.history(limit=None, after=start_date, before=end_date):
-                    message_count += 1
-            except discord.Forbidden:
-                print(f"Missing access to read messages in {channel.name}")
-        print(f'Total messages between {start_date} and {end_date}: {message_count}')
-
-
-@bot.command()
-async def count_messages(ctx, time: int):
-    if ctx.author.id == 811235357663297546: 
-        end_date = datetime.datetime.utcnow()  # Current date and time
-        start_date = end_date - datetime.timedelta(days=time)
-        message_count = 0
-        for channel in ctx.guild.text_channels:
-            print(channel.name)
-            try:
-                async for message in channel.history(limit=None, after=start_date, before=end_date):
-                    message_count += 1
-            except discord.Forbidden:
-                print(f"Missing access to read messages in {channel.name}")
-        print(f'Total messages between {start_date} and {end_date}: {message_count}')
-
-
-@bot.command()
-async def count_threads(ctx, time: int):
-    if ctx.author.id == 811235357663297546:
-
-        end_date = datetime.datetime.utcnow()  # Current date and time
-        start_date = end_date - datetime.timedelta(days=time)
-        thread_message_count = 0
         
-        for channel in ctx.guild.text_channels:
-            print(f"CHANNELNAME:                      {channel.name}")
-            for thread in channel.threads:
-                print(channel.name)
-                print(thread.name)
-                async for message in thread.history(limit=None, after=start_date, before=end_date):
-                    thread_message_count += 1
-        print(f'Total thread_messages between {start_date} and {end_date}: {thread_message_count}')
-
-
-@bot.command()
-async def count_forum_threads(ctx, time: int):
-    if ctx.author.id == 811235357663297546:
-        end_date = datetime.datetime.utcnow()  # Current date and time
-        start_date = end_date - datetime.timedelta(days=time)
-        forum_thread_message_count = 0
-        
-        for forum in ctx.guild.forums:
-            print(f"FORUMNAME:                      {forum.name}")
-            for thread in forum.threads:
-                print(forum.name)
-                print(thread.name)
-                async for message in thread.history(limit=None, after=start_date, before=end_date):
-                    print(f"THREAD NAME: {thread.name}")
-                    forum_thread_message_count += 1
-            """
-            async for thread in forum.archived_threads(limit=None, before=end_date):
-                print(f"ARCHIVED THREAD NAME: {thread.name}")
-                forum_thread_message_count += 1            
-            """
-
-        print(f'Total forum_thread_messages between {start_date} and {end_date}: {forum_thread_message_count}')
-
-
-@bot.command()
-async def top_gradio(ctx, channel_id):
-    if ctx.author.id == 811235357663297546:    
-        message_counts = {}
-        try:
-            channel = await bot.fetch_channel(channel_id)
-            
-            async for message in channel.history(limit=None):
-                message_counts[message.author] = message_counts.get(message.author, 0) + 1
-        except discord.Forbidden:
-            print(f"Missing access to read messages in {channel.name}")
-    
-        sorted_users = sorted(message_counts.items(), key=lambda x: x[1], reverse=True)
-        top_list = "\n".join([f"{member.name}: {count}" for member, count in sorted_users[:50]])
-        print(f"Message count per user in the channel:\n{top_list}")
-
-
-@bot.command()
-async def top_gradio_threads(ctx, channel_id):
-    if ctx.author.id == 811235357663297546:    
-        message_counts = {}
-        
-        channel = await bot.fetch_channel(channel_id)
-        print(channel)
-        threads = channel.threads
-        print(threads)
-        for thread in threads:
-            print(f"Thread Name: {thread.name}, Thread ID: {thread.id}, Parent ID: {thread.parent_id}")        
-            async for message in thread.history(limit=None):
-                message_counts[message.author] = message_counts.get(message.author, 0) + 1
-        
-        async for thread in channel.archived_threads(limit=None):
-            print(f"ARCHIVED Thread Name: {thread.name}, ARCHIVED Thread ID: {thread.id}, Parent ID: {thread.parent_id}") 
-            async for message in thread.history(limit=None):
-                message_counts[message.author] = message_counts.get(message.author, 0) + 1            
-
-
-
-        sorted_users = sorted(message_counts.items(), key=lambda x: x[1], reverse=True)
-        top_list = "\n".join([f"[{member.id}]{member.name}: {count}" for member, count in sorted_users[:50]])
-        print(f"Message count per user in the channel:\n{top_list}")
+@bot.event
+async def on_reaction_add(reaction, user):
+    try:
+        if user.id not in bot_ids:
+            await add_exp(user)
+    except Exception as e:
+        print(f"on_reaction_add Error: {e}")
 
         
 """"""
