@@ -81,6 +81,24 @@ async def on_message(message):
                     lvl13 = guild.get_role(1171525021928263791)
                     lvl14 = guild.get_role(1171525062201966724)
                     lvl15 = guild.get_role(1171525098465918996)
+
+                    lvls = {
+                        1: lvl1,
+                        2: lvl2,
+                        3: lvl3,
+                        4: lvl4,
+                        5: lvl5,
+                        6: lvl6,
+                        7: lvl7,
+                        8: lvl8,
+                        9: lvl9,
+                        10: lvl10,
+                        11: lvl11,
+                        12: lvl12,
+                        13: lvl13,
+                        14: lvl14,
+                        15: lvl15,
+                    }
         
                     # does a record already exist?
                     cell = worksheet.find(str(message.author.id))
@@ -104,103 +122,19 @@ async def on_message(message):
                             print(f"updating record for {message.author}: {xp} xp")
                             # write with added xp
                             worksheet.update(values=[[xp, current_level]], range_name=f'C{cell.row}:D{cell.row}')   
-                            if current_level == 2:
-                                if lvl2 not in message.author.roles:
-                                    await message.author.add_roles(lvl2)  
-                                    print(f"Gave {message.author} {lvl2}")
-                                    await message.author.remove_roles(lvl1)
-                                    print(f"Removed {lvl1} from {message.author}")
-            
-                            if current_level == 3:
-                                if lvl3 not in message.author.roles:
-                                    await message.author.add_roles(lvl3)  
-                                    print(f"Gave {message.author} {lvl3}")
-                                    await message.author.remove_roles(lvl2)
-                                    print(f"Removed {lvl2} from {message.author}")
-            
-                            if current_level == 4:
-                                if lvl4 not in message.author.roles:
-                                    await message.author.add_roles(lvl4)  
-                                    print(f"Gave {message.author} {lvl4}")
-                                    await message.author.remove_roles(lvl3)
-                                    print(f"Removed {lvl3} from {message.author}")
-            
-                            if current_level == 5:
-                                if lvl5 not in message.author.roles:
-                                    await message.author.add_roles(lvl5)  
-                                    print(f"Gave {message.author} {lvl5}")
-                                    await message.author.remove_roles(lvl4)
-                                    print(f"Removed {lvl4} from {message.author}")
-            
-                            if current_level == 6:
-                                if lvl6 not in message.author.roles:
-                                    await message.author.add_roles(lvl6)  
-                                    print(f"Gave {message.author} {lvl6}")
-                                    await message.author.remove_roles(lvl5)
-                                    print(f"Removed {lvl5} from {message.author}")
-                                    
-                            if current_level == 7:
-                                if lvl7 not in message.author.roles:
-                                    await message.author.add_roles(lvl7)  
-                                    print(f"Gave {message.author} {lvl7}")
-                                    await message.author.remove_roles(lvl6)
-                                    print(f"Removed {lvl6} from {message.author}")
-            
-                            if current_level == 8:
-                                if lvl8 not in message.author.roles:
-                                    await message.author.add_roles(lvl8)  
-                                    print(f"Gave {message.author} {lvl8}")
-                                    await message.author.remove_roles(lvl7)
-                                    print(f"Removed {lvl7} from {message.author}")
-                            
-                            if current_level == 9:
-                                if lvl9 not in message.author.roles:
-                                    await message.author.add_roles(lvl9)  
-                                    print(f"Gave {message.author} {lvl9}")
-                                    await message.author.remove_roles(lvl8)
-                                    print(f"Removed {lvl8} from {message.author}")                    
-                            
-                            if current_level == 10:
-                                if lvl10 not in message.author.roles:
-                                    await message.author.add_roles(lvl10)
-                                    print(f"Gave {message.author} {lvl10}")
-                                    await message.author.remove_roles(lvl9)
-                                    print(f"Removed {lvl9} from {message.author}") 
-            
-                            if current_level == 11:
-                                if lvl11 not in message.author.roles:
-                                    await message.author.add_roles(lvl11)  
-                                    print(f"Gave {message.author} {lvl11}")
-                                    await message.author.remove_roles(lvl10)
-                                    print(f"Removed {lvl10} from {message.author}")
-                                
-                            if current_level == 12:
-                                if lvl12 not in message.author.roles:
-                                    await message.author.add_roles(lvl12)
-                                    print(f"Gave {message.author} {lvl12}")
-                                    await message.author.remove_roles(lvl11)
-                                    print(f"Removed {lvl11} from {message.author}")
-                                    
-                            if current_level == 13:
-                                if lvl13 not in message.author.roles:
-                                    await message.author.add_roles(lvl13)
-                                    print(f"Gave {message.author} {lvl13}")
-                                    await message.author.remove_roles(lvl12)
-                                    print(f"Removed {lvl12} from {message.author}")
-                                    
-                            if current_level == 14:
-                                if lvl14 not in message.author.roles:
-                                    await message.author.add_roles(lvl14)
-                                    print(f"Gave {message.author} {lvl14}")
-                                    await message.author.remove_roles(lvl13)
-                                    print(f"Removed {lvl13} from {message.author}")
-                                    
-                            if current_level == 15:
-                                if lvl15 not in message.author.roles:
-                                    await message.author.add_roles(lvl15) 
-                                    print(f"Gave {message.author} {lvl15}")
-                                    await message.author.remove_roles(lvl14)
-                                    print(f"Removed {lvl14} from {message.author}")                    
+                            # initial role assignment
+                            if current_level == 1:
+                                if lvl1 not in message.author.roles:
+                                    await message.author.add_roles(lvl1)
+                                    print(f"Gave {message.author} {lvl1}")
+                            # level up
+                            elif current_level >= 2 and current_level <=15:
+                                current_role = lvls[current_level]
+                                if current_role not in message.author.roles:
+                                    await message.author.add_roles(current_role)
+                                    print(f"Gave {message.author} {current_role}")
+                                    await message.author.remove_roles(lvls[current_level -1])
+                                    print(f"Removed {lvls[current_level -1]} from {message.author}")                   
 
         
                             """
