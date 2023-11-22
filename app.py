@@ -14,6 +14,7 @@ import re
 import gradio_client
 import gradio as gr
 from gradio_client import Client
+from huggingface_hub import HfApi, list_models, list_liked_repos, list_metrics
 
 DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
 intents = discord.Intents.all() 
@@ -29,9 +30,13 @@ with open(file_path, 'w') as json_file:
     json.dump(service_account, json_file)
 gspread_bot = gspread.service_account(filename='service_account.json')
 worksheet = gspread_bot.open("levelbot").sheet1
+worksheet2 = gspread_bot.open("hf_discord_verified_users_test").sheet1
 """"""
 bot_ids = [1136614989411655780, 1166392942387265536, 1158038249835610123, 1130774761031610388, 1155489509518098565, 1155169841276260546, 1152238037355474964, 1154395078735953930]
 """"""
+api = HfApi()
+""""""
+
 
 @bot.event
 async def on_ready():
@@ -47,9 +52,44 @@ def calculate_xp(level):
     return (int(level ** 3))
 
 
-async def add_exp(member):
+# use a command
+# check xp record presence (done in add_exp)
+# check discord_user_id is verified
+# do add_exp for hub?
+@bot.command(name='add_exp_hub')
+async def add_exp_hub(ctx):
     try:
         guild = bot.get_guild(879548962464493619)
+        role = discord.utils.get(guild.roles, id=900063512829755413)
+        if role:
+            print(role)
+            # Get members with the specified role
+            """
+            members_with_role = [member.id for member in guild.members if role in member.roles]
+            for member_id in members_with_role:            
+            """
+            column_values = worksheet2.col_values(3)
+            for value in column_values:
+                row_number = column_values.index(value) + 1
+                hf_user_name = value
+                val = worksheet.acell(f'G{row_number}').value
+                if val == '':
+                    # check likes
+                    try:
+                        likes = list_liked_repos(f"{hf_user_name}")
+                        hf_likes_new = likes.total
+                        worksheet2.update(f'G{row_number}', f'{hf_likes_new}')
+                    except Exception as e:
+                        print(f"add_exp_hub Error: {e}")  
+                        
+    except Exception as e:
+        print(f"add_exp_hub Error: {e}")  
+        
+
+async def add_exp(member_id):
+    try:
+        guild = bot.get_guild(879548962464493619)
+        member = guild.get_member(member_id)
         lvl1 = guild.get_role(1171861537699397733)
         lvl2 = guild.get_role(1171861595115245699)
         lvl3 = guild.get_role(1171861626715115591)
@@ -116,7 +156,7 @@ async def add_exp(member):
 async def on_message(message):
     try:
         if message.author.id not in bot_ids:
-            await add_exp(message.author)
+            await add_exp(message.author.id)
         await bot.process_commands(message)
     except Exception as e:
         print(f"on_message Error: {e}")
@@ -126,7 +166,7 @@ async def on_message(message):
 async def on_reaction_add(reaction, user):
     try:
         if user.id not in bot_ids:
-            await add_exp(user)
+            await add_exp(user.id)
     except Exception as e:
         print(f"on_reaction_add Error: {e}")
 
