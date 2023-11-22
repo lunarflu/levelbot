@@ -65,9 +65,14 @@ async def add_exp(member):
         lvl13 = guild.get_role(1171525021928263791)
         lvl14 = guild.get_role(1171525062201966724)
         lvl15 = guild.get_role(1171525098465918996)
+        lvl16 = guild.get_role(1176826165546201099)
+        lvl17 = guild.get_role(1176826221301092392)
+        lvl18 = guild.get_role(1176826260643659776)
+        lvl19 = guild.get_role(1176826288816791693)
+        lvl20 = guild.get_role(1176826319447801896)
         lvls = {
             1: lvl1, 2: lvl2, 3: lvl3, 4: lvl4, 5: lvl5, 6: lvl6, 7: lvl7, 8: lvl8, 9: lvl9, 10: lvl10,
-            11: lvl11, 12: lvl12, 13: lvl13, 14: lvl14, 15: lvl15,
+            11: lvl11, 12: lvl12, 13: lvl13, 14: lvl14, 15: lvl15, 16: lvl16, 17: lvl17, 18: lvl18, 19: lvl19, 20: lvl20,
         }        
         #if member.id == 811235357663297546:
         # does a record already exist?
@@ -96,7 +101,7 @@ async def add_exp(member):
                 # write with added xp
                 worksheet.update(values=[[xp, current_level]], range_name=f'C{cell.row}:D{cell.row}')   
                 # level up
-                if current_level >= 2 and current_level <=15:
+                if current_level >= 2 and current_level <=20:
                     current_role = lvls[current_level]
                     if current_role not in member.roles:
                         await member.add_roles(current_role)
