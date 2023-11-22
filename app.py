@@ -6,7 +6,10 @@ import json
 import datetime
 import requests
 import os.path
+import random
 import gspread
+import re
+
 
 import gradio_client
 import gradio as gr
@@ -35,11 +38,7 @@ async def on_ready():
     print(f'Logged in as {bot.user.name}')
     print(f"XP_PER_MESSAGE: {XP_PER_MESSAGE}")
 
-
-
     
-
-
 def calculate_level(xp):
     return int(xp ** (1.0 / 3.0))
 
