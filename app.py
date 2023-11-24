@@ -59,28 +59,68 @@ def calculate_xp(level):
 @bot.command(name='add_exp_hub')
 async def add_exp_hub(ctx):
     try:
-        guild = bot.get_guild(879548962464493619)
-        role = discord.utils.get(guild.roles, id=900063512829755413)
-        if role:
-            print(role)
-            # Get members with the specified role
-            """
-            members_with_role = [member.id for member in guild.members if role in member.roles]
-            for member_id in members_with_role:            
-            """
-            column_values = worksheet2.col_values(3)
-            for value in column_values:
-                row_number = column_values.index(value) + 1
-                hf_user_name = value
-                val = worksheet.acell(f'G{row_number}').value
-                if val == '':
-                    # check likes
-                    try:
-                        likes = list_liked_repos(f"{hf_user_name}")
-                        hf_likes_new = likes.total
-                        worksheet2.update(f'G{row_number}', f'{hf_likes_new}')
-                    except Exception as e:
-                        print(f"add_exp_hub Error: {e}")  
+        column_values_7 = worksheet2.col_values(7)
+        column_values_3 = worksheet2.col_values(3)
+        
+        for i, value in enumerate(column_values_7):
+            if not value:
+                print(f"cell empty, updating with likes")
+                hf_user_name = column_values_3[i]
+                print(f"hf_user_name = {hf_user_name}")
+                try:
+                    likes = list_liked_repos(f"{hf_user_name}")
+                    hf_likes_new = likes.total
+                    print(f"hf_likes_new = {hf_likes_new}")
+                    worksheet2.update(f'G{i+1}', f'{hf_likes_new}')
+                except Exception as e:
+                    print(f"list_liked_repos Error: {e}")  
+                        
+    except Exception as e:
+        print(f"add_exp_hub Error: {e}")  
+
+
+@bot.command(name='api_test')
+async def api_test(ctx):
+    # take nate 
+    column_values_3 = worksheet2.col_values(3)
+    column_values_8 = worksheet2.col_values(8)
+    #row_values_2 = worksheet2.row_values(2)
+
+    for i, user in enumerate(column_values_3):
+        if not column_values_8[i]:
+            url = f"https://huggingface.co/api/users/{user}/overview"
+            response = requests.get(url)
+            if response.status_code == 200:
+                data = response.json()
+        
+                likes = data["numLikes"]
+                models = data["numModels"]
+                datasets = data["numDatasets"]
+                spaces = data["numSpaces"]
+                discussions = data["numDiscussions"]
+                papers = data["numPapers"]
+                upvotes = data["numUpvotes"]
+            
+                worksheet2.update(values=[[likes, models, datasets, spaces, discussions, papers, upvotes]], range_name=f'G{i+1}:M{i+1}')
+            else:
+                print(f"Failed to retrieve data. Status code: {response.status_code}")  
+
+
+@bot.command(name='get_cell_value')
+async def get_cell_value(ctx, row, col):
+    cell = worksheet2.cell(row, col)
+    print(cell.value)
+
+
+@bot.command(name='check')
+async def check(ctx):
+    try:
+        column_values_7 = worksheet2.col_values(7)
+        column_values_3 = worksheet2.col_values(3)
+        
+        for i, value in enumerate(column_values_7):
+            print(i)
+            print(value)
                         
     except Exception as e:
         print(f"add_exp_hub Error: {e}")  
@@ -148,8 +188,8 @@ async def add_exp(member_id):
                         print(f"Gave {member} {current_role}")
                         await member.remove_roles(lvls[current_level-1])
                         print(f"Removed {lvls[current_level-1]} from {member}")  
-                        print(f"{member} Level up! {[current_level-1]} -> {current_level}!")
-                        #await member.send(f"Level up! {[current_level-1]} -> {current_level}!")
+                        #print(f"{member} Level up! {current_level-1} -> {current_level}!")
+                        await member.send(f"Level up! {current_level-1} -> {current_level}!")
                         
     except Exception as e:
         print(f"add_exp Error: {e}")   
