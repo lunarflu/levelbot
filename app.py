@@ -147,7 +147,10 @@ async def add_exp(member_id):
                         await member.add_roles(current_role)
                         print(f"Gave {member} {current_role}")
                         await member.remove_roles(lvls[current_level-1])
-                        print(f"Removed {lvls[current_level-1]} from {member}")      
+                        print(f"Removed {lvls[current_level-1]} from {member}")  
+                        print(f"{member} Level up! {[current_level-1]} -> {current_level}!")
+                        #await member.send(f"Level up! {[current_level-1]} -> {current_level}!")
+                        
     except Exception as e:
         print(f"add_exp Error: {e}")   
 
