@@ -269,7 +269,7 @@ async def process_avatar(url,hugg = True):
     name="lvl",
     description="get the level of a user",
 )
-async def converse(ctx):
+async def lvl(ctx):
     username=ctx.author.name
     url = ctx.author.display_avatar.url
     # TODO : 
