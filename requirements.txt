@@ -2,3 +2,4 @@ discord.py
 gradio
 gspread
 huggingface_hub
+pillow

@@ -9,6 +9,9 @@ import os.path
 import random
 import gspread
 import re
+from PIL import Image, ImageDraw ,ImageFont,ImageOps
+import requests
+from io import BytesIO
 
 
 import gradio_client
@@ -213,7 +216,84 @@ async def on_reaction_add(reaction, user):
     except Exception as e:
         print(f"on_reaction_add Error: {e}")
 
-        
+
+def create_progress_bar(w = 800,h = 100 ,progress_percentage=0.25):
+    progress = Image.new("RGB", (w,h)) 
+    draw = ImageDraw.Draw(progress)
+    draw_progress(20, h*0.5, w-20*3, 25, progress_percentage,draw)
+    return progress
+def draw_progress(x, y, width, height, progress_percentage,draw, fg="#FFD21E", fg2="#6B7280"):
+    # Draw the background
+    draw.rectangle((x+(height/2), y, x+width+(height/2), y+height), fill=fg2, width=10)
+    draw.ellipse((x+width, y, x+height+width, y+height), fill=fg2)
+    draw.ellipse((x, y, x+height, y+height), fill=fg2)
+    width = int(width*progress_percentage)
+    # Draw the part of the progress bar that is actually filled
+    draw.rectangle((x+(height/2), y, x+width+(height/2), y+height), fill=fg, width=10)
+    draw.ellipse((x+width, y, x+height+width, y+height), fill=fg)
+    draw.ellipse((x, y, x+height, y+height), fill=fg)
+
+def create_base(w=800,h = 300,username = "username",current_xp=25,next_lvl_xp=100):
+    base = Image.new("RGB",(w,h))
+    draw = ImageDraw.Draw(base)
+    # requires a newer version of pillow
+    font = ImageFont.load_default(size=50) # big text
+    draw.text((20, 20),username,(255,255,255),font=font)
+    font = ImageFont.load_default(size=30)
+    xp_msg = f"{current_xp}/{next_lvl_xp} XP"
+    pad = font.getlength(xp_msg)
+    draw.text((w-30-pad, h-50),xp_msg,(255,255,255),font=font)
+    return base
+
+
+async def process_avatar(url,hugg = True):
+    response = requests.get(url)
+    img = Image.open(BytesIO(response.content))
+    # resize image to a square
+    img = ImageOps.fit(img, (189, 189))
+
+    # create circular mask
+    mask = Image.new('L', (189, 189), 0)
+    draw = ImageDraw.Draw(mask)
+    draw.ellipse((0, 0, 189, 189), fill=255)
+    # apply mask to image
+    img.putalpha(mask)
+    if hugg :
+      img2 = Image.open("./assets/hugg.png")
+      img.paste(img2,(0,0),img2)
+    return img
+
+
+# AI prediction command
+@bot.hybrid_command(
+    name="lvl",
+    description="get the level of a user",
+)
+async def converse(ctx):
+    username=ctx.author.name
+    url = ctx.author.display_avatar.url
+    # TODO : 
+    # get the level of a user
+    # get next lvl xp
+    current_xp = 25 
+    next_lvl_xp = 100
+    progress_percentage = current_xp/next_lvl_xp
+    base = create_base(username=username,current_xp=current_xp,next_lvl_xp=next_lvl_xp)
+    progress = create_progress_bar(progress_percentage=progress_percentage)
+    avatar = await process_avatar(url)
+    final = Image.new("RGB",(base.size[0],base.size[1]+progress.size[1]))
+    final.paste(base,(0,0))
+    final.paste(progress,(0,base.size[1]))
+    x_begin = final.size[0]-189-20
+    final.paste(avatar,(x_begin,20,x_begin+189,20+189),avatar)
+    with BytesIO() as image_binary:
+                    final.save(image_binary, 'PNG')
+                    image_binary.seek(0)
+                    await ctx.send(file=discord.File(fp=image_binary, filename=f'{username}.png'))
+
+
+
+
 """"""
 DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", None)
 def run_bot():
